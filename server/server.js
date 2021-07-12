@@ -1,4 +1,6 @@
 const express = require('express');
+const path = require('path');
+const db = require('./config/connection');
 const { authMiddleware } = require('./utils/auth');
 
 //import ApolloServer
@@ -7,9 +9,8 @@ const { ApolloServer } = require('apollo-server-express');
 //imprt typeDefs and resolvers 
 const { typeDefs, resolvers } = require('./schemas');
 
-const path = require('path');
-const db = require('./config/connection');
-const routes = require('./routes');
+
+// const routes = require('./routes');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -24,7 +25,8 @@ const server = new ApolloServer({
 //integrate Apollo server with Express application as middleware
 server.applyMiddleware({app});
 
-app.use(express.urlencoded({ extended: true }));
+//exntended was true 
+app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 // if we're in production, serve client/build as static assets
@@ -37,7 +39,7 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../client/build/index.html'));
 });
 
-app.use(routes);
+// app.use(routes);
 
 db.once('open', () => {
   app.listen(PORT, () => {
@@ -48,6 +50,6 @@ db.once('open', () => {
   });
 });
 
-process.on('uncaughtException', function(err) {
-  console.log('Caught exception: ' + err);
-});;
+// process.on('uncaughtException', function(err) {
+//   console.log('Caught exception: ' + err);
+// });;
